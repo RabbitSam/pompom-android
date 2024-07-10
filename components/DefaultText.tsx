@@ -2,11 +2,14 @@ import { Text, TextStyle, StyleSheet } from "react-native";
 import { PropsWithChildren } from "react";
 
 
-type DefaultTextProps = PropsWithChildren<{ style?: TextStyle, fontWeight?: "normal" | "medium" | "bold" | "semibold" | "extrabold" }>
+type DefaultTextProps = PropsWithChildren<{ 
+    style?: TextStyle, 
+    fontWeight?: "normal" | "medium" | "bold" | "semibold" | "extrabold", 
+    size?: "sm" | "md" | "lg" | "xl" | "2xl" }>
 
-export default function DefaultText({children, style, fontWeight="normal"} : DefaultTextProps) {
+export default function DefaultText({children, style, fontWeight="normal", size="md"} : DefaultTextProps) {
     return (
-        <Text style={{...styles.text, ...style, fontFamily: fontWeightMap[fontWeight]}}>
+        <Text style={{...styles[size], ...style, fontFamily: fontWeightMap[fontWeight]}}>
             {children}
         </Text>
     );
@@ -14,9 +17,26 @@ export default function DefaultText({children, style, fontWeight="normal"} : Def
 
 
 const styles = StyleSheet.create({
-    text: {
-        lineHeight: 24,
-        fontSize: 16
+    sm: {
+        fontSize: 14,
+        lineHeight: 18
+    },
+    md: {
+        fontSize: 16,
+        lineHeight: 24
+    },
+    lg: {
+        fontSize: 18,
+        lineHeight: 18
+
+    },
+    xl: {
+        fontSize: 20,
+        lineHeight: 30
+    },
+    "2xl": {
+        fontSize: 28,
+        lineHeight: 42
     }
 });
 

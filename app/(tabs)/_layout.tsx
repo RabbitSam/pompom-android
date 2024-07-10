@@ -22,6 +22,7 @@ export default function TabLayout() {
           borderTopColor: Colors.darkenedBackground
         }
       }}
+      
     >
       <Tabs.Screen name="index" options={{
         title: "Home",

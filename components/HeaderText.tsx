@@ -6,7 +6,7 @@ import DefaultText from "./DefaultText";
 
 export default function HeaderText({children}: PropsWithChildren) {
     return (
-        <DefaultText style={styles.text} fontWeight="bold">
+        <DefaultText style={styles.text} fontWeight="bold" size="2xl">
             {children}
         </DefaultText>
     );
@@ -15,8 +15,6 @@ export default function HeaderText({children}: PropsWithChildren) {
 
 const styles = StyleSheet.create({
     text: {
-        fontSize: 28,
-        lineHeight: 36,
         color: Colors.primary
     }
 });
