@@ -6,7 +6,6 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 export default function PageContainer({children}: PropsWithChildren ) {
     return (
         <>
-            <StatusBar backgroundColor={Colors.background} barStyle={"dark-content"}/>
             <View style={styles.body}>
                 <SafeAreaProvider>
                     <SafeAreaView style={styles.main}>

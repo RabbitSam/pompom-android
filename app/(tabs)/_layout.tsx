@@ -1,30 +1,40 @@
-import { Stack } from "expo-router";
-import { SplashScreen } from "expo-router";
-import { useFonts } from "expo-font";
-import { useEffect } from "react";
-import { Dosis_400Regular, Dosis_500Medium, Dosis_600SemiBold, Dosis_700Bold, Dosis_800ExtraBold } from "@expo-google-fonts/dosis";
+import { Tabs } from "expo-router";
+import { Colors } from "@/constants/Colors";
+import { faHome, faStopwatch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
-SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const [loaded] = useFonts({
-    Dosis_400Regular, Dosis_500Medium,
-    Dosis_600SemiBold, Dosis_700Bold, Dosis_800ExtraBold
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync()
-    }
-  }, [loaded]);
+export default function TabLayout() {
 
   return (
-    loaded ?
-    <Stack>
-      <Stack.Screen name="index" options={{headerShown: false}} />
-    </Stack>
-    :
-    <>
-    </>
+    <Tabs 
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveBackgroundColor: Colors.secondary,
+        tabBarActiveTintColor: Colors.white,
+        tabBarInactiveBackgroundColor: Colors.background,
+        tabBarLabelStyle: {
+          fontFamily: "Dosis_600SemiBold",
+          paddingBottom: 5,
+        },
+        tabBarItemStyle: {
+          borderTopWidth: 2,
+          borderTopColor: Colors.darkenedBackground
+        }
+      }}
+    >
+      <Tabs.Screen name="index" options={{
+        title: "Home",
+        tabBarIcon: ({ color }) => (
+          <FontAwesomeIcon icon={faHome} color={color} size={20}/>
+        ),
+      }}/>
+      <Tabs.Screen name="quick-pom" options={{
+        title: "Quick Pom",
+        tabBarIcon: ({ color }) => (
+          <FontAwesomeIcon icon={faStopwatch} color={color} size={20}/>
+        ),
+      }}/>
+    </Tabs>
   );
 }

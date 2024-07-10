@@ -21,8 +21,8 @@ export default function Index() {
             method of productivity. It primarily consists of <DefaultText fontWeight="bold">seven</DefaultText> steps:
           </DefaultText>
         </View>
-        <View style={styles.list}>
-          <FlatList
+        <FlatList
+            style={styles.list}
             data={
               [
                 {id: "1", title: "Decide on a task."},
@@ -37,7 +37,6 @@ export default function Index() {
             renderItem={({item}) => <ListItem>{item.title}</ListItem>}
             keyExtractor={item => item.id}
           />
-        </View>
       </View>
     </PageContainer>
   );
@@ -59,7 +58,8 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    
   },
   content: {
     display: "flex",
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
   list: {
     display: "flex",
     flexShrink: 1,
+    flexGrow: 0,
     gap: 5
   }
 
