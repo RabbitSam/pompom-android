@@ -3,7 +3,7 @@ import PageContainer from "@/components/PageContainer";
 import DefaultText from "@/components/DefaultText";
 import HeaderText from "@/components/HeaderText";
 import { PropsWithChildren } from "react";
-import { ButtonLink } from "@/components/Button";
+import { ButtonLink } from "@/components/Button/Button";
 
 
 export default function Index() {

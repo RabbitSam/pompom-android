@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { Pressable, StyleSheet, GestureResponderEvent, ViewStyle } from "react-native";
 import { Link } from "expo-router";
-import DefaultText from "./DefaultText";
+import DefaultText from "../DefaultText";
 import { useState, PropsWithChildren, ReactNode } from "react";
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";

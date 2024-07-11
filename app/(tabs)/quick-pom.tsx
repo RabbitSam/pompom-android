@@ -7,14 +7,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Colors } from "@/constants/Colors";
 import { useState } from "react";
 import { DefaultTimerState } from "@/constants/DefaultTimerState";
-import Button from "@/components/Button";
+import Button from "@/components/Button/Button";
+import { useDispatch } from "react-redux";
+import { router } from "expo-router";
+import { setTimers } from "@/stores/currentTimerSlice";
 
 
 export default function QuickPom() {
     const [timerState, setTimerState] = useState<TimerState>(DefaultTimerState);
+    const dispatch = useDispatch();
 
     const handleReset = () => {
         setTimerState(DefaultTimerState);
+    };
+
+    const handleStart = () => {
+        dispatch(setTimers(timerState));
+
+        router.navigate("/start-timer/");
     };
 
     return (
@@ -30,7 +40,7 @@ export default function QuickPom() {
                 onChange={setTimerState}
             />
             <View style={styles.buttons}>
-                <Button category="primary" icon={faPlay}> Start Pom</Button>
+                <Button category="primary" icon={faPlay} onPress={(_) => handleStart()}> Start Pom</Button>
                 <Button category="tertiary" icon={faRefresh} onPress={(_) => handleReset()}> Reset</Button>
             </View>
         </PageContainer>

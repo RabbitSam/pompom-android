@@ -5,7 +5,7 @@ import { PropsWithChildren } from "react";
 type DefaultTextProps = PropsWithChildren<{ 
     style?: TextStyle, 
     fontWeight?: "normal" | "medium" | "bold" | "semibold" | "extrabold", 
-    size?: "sm" | "md" | "lg" | "xl" | "2xl" }>
+    size?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl"}>
 
 export default function DefaultText({children, style, fontWeight="normal", size="md"} : DefaultTextProps) {
     return (
@@ -37,6 +37,10 @@ const styles = StyleSheet.create({
     "2xl": {
         fontSize: 28,
         lineHeight: 42
+    },
+    "4xl": {
+        fontSize: 50,
+        lineHeight: 75
     }
 });
 

@@ -5,6 +5,9 @@ import { useEffect } from "react";
 import { Dosis_400Regular, Dosis_500Medium, Dosis_600SemiBold, Dosis_700Bold, Dosis_800ExtraBold } from "@expo-google-fonts/dosis";
 import { Colors } from "@/constants/Colors";
 import { StatusBar } from "react-native";
+import store from "@/stores/store";
+import { Provider } from "react-redux";
+
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,12 +25,13 @@ export default function RootLayout() {
 
   return (
     loaded ?
-    <>
+    <Provider store={store}>
       <StatusBar backgroundColor={Colors.background} barStyle={"dark-content"}/>
       <Stack>
         <Stack.Screen name="(tabs)" options={{headerShown: false}} />
+        <Stack.Screen name="start-timer" options={{headerShown: false}} />
       </Stack>
-    </>
+    </Provider>
     :
     <>
     </>

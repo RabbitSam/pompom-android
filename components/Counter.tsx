@@ -1,4 +1,4 @@
-import Button from "./Button";
+import Button from "./Button/Button";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { StyleSheet, View } from "react-native";
 import DefaultText from "./DefaultText";
