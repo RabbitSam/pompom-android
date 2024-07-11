@@ -1,9 +1,11 @@
-import Button from "./Button/Button";
+import Button from "./Button";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { StyleSheet, View } from "react-native";
 import DefaultText from "./DefaultText";
 import { Colors } from "@/constants/Colors";
 import { VisuallyHidden } from "@/constants/VisuallyHidden";
+import { useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 
 type CounterProps = {
@@ -17,6 +19,7 @@ type CounterProps = {
 
 
 export default function Counter({current, onIncrease, onDecrease, alt, after="", orientation="vertical"} : CounterProps) {
+    const plusRef = useRef();
 
     return(
         <View 
@@ -24,11 +27,20 @@ export default function Counter({current, onIncrease, onDecrease, alt, after="",
         >
             <DefaultText style={VisuallyHidden}>{alt}</DefaultText>
             <View style={styles.buttonContainer}>
-                <Button style={{flex: 1}} onPress={(_) => onIncrease()} category="tertiary" icon={faPlus} description="Click to increase this value." />
+                <Button  style={{flex: 1}} onPress={(_) => onIncrease()} category="tertiary" description="Click to increase this value." 
+                >
+                    {
+                        (color) => <FontAwesomeIcon icon={faPlus} color={color}/>
+                    }
+                </Button>
             </View>
             <DefaultText style={styles.current} fontWeight="semibold" size="xl">{current}{after}</DefaultText>
             <View style={styles.buttonContainer}>
-                <Button style={{flex: 1, height: "100%"}} onPress={(_) => onDecrease()} category="tertiary" icon={faMinus} description="Click to decrease this value." />
+                <Button style={{flex: 1, height: "100%"}} onPress={(_) => onDecrease()} category="tertiary" description="Click to decrease this value." >
+                    {
+                        (color) => <FontAwesomeIcon icon={faMinus} color={color}/>
+                    }
+                </Button>
             </View>
         </View>
     );
