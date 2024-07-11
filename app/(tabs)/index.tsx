@@ -19,7 +19,7 @@ export default function Index() {
           method of productivity. It primarily consists of <DefaultText fontWeight="bold">seven</DefaultText> steps:
         </DefaultText>
       </View>
-      <FlatList
+      {/* <FlatList
         style={styles.list}
         data={
           [
@@ -34,7 +34,20 @@ export default function Index() {
         }
         renderItem={({item}) => <ListItem>{item.title}</ListItem>}
         keyExtractor={item => item.id}
-      />
+      /> */}
+      <View style={styles.list}>
+        {
+          [
+            {id: "1", title: "Decide on a task."},
+            {id: "2", title: "Set the Pomodoro timer (typically for 25 minutes)."},
+            {id: "3", title: "Work on the task."},
+            {id: "4", title: "When the timer ends, take a short break (typically 5 - 10 minutes)."},
+            {id: "5", title: "When the break time ends, get started again from step 2."},
+            {id: "6", title: "After four pomodoros are done, take a longer break (typically 20 to 30 minutes)."},
+            {id: "7", title: "When the long break is over, get started again from step 2."},
+          ].map((item) => <ListItem key={item.id} index={item.id}>{item.title}</ListItem>)
+        }
+      </View>
       <View style={styles.buttons}>
         <ButtonLink href="quick-pom" category="primary">
           Get Started with a Quick Pom
@@ -47,11 +60,11 @@ export default function Index() {
   );
 }
 
-function ListItem({children} : PropsWithChildren) {
+function ListItem({children, index} : PropsWithChildren<{index: string}>) {
   return (
     <View style={styles.listItem}>
-      <DefaultText>&bull;</DefaultText>
-      <DefaultText style={{marginRight: 10}}>{children}</DefaultText>
+      <DefaultText>{index}.</DefaultText>
+      <DefaultText>{children}</DefaultText>
     </View>
   );
 }
@@ -60,18 +73,18 @@ function ListItem({children} : PropsWithChildren) {
 const styles = StyleSheet.create({
   content: {
     display: "flex",
+    width: "100%",
     gap: 5
   },
   listItem: {
     display: "flex",
     flexDirection: "row",
     gap: 5,
-    paddingRight: 10
   },
   list: {
     display: "flex",
-    flexShrink: 1,
-    flexGrow: 0,
+    marginLeft: 10,
+    marginRight: 15,
     gap: 5
   },
   buttons: {
