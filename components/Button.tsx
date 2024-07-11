@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors";
-import { Pressable, StyleSheet, GestureResponderEvent } from "react-native";
+import { Pressable, StyleSheet, GestureResponderEvent, ViewStyle } from "react-native";
 import { Link } from "expo-router";
 import DefaultText from "./DefaultText";
 import { useState, PropsWithChildren, ReactNode } from "react";
@@ -11,11 +11,12 @@ type ButtonProps = PropsWithChildren<{
     category: "primary" | "secondary" | "tertiary",
     onPress?: null | ((e : GestureResponderEvent) => void),
     icon?: IconDefinition,
-    description?: string
+    description?: string,
+    style?: Omit<ViewStyle, "padding" | "paddingBottom" | "display" | "flexDirection" | "gap" | "textAlign">
 }>
 
 
-export default function Button({ category, onPress, children, icon, description } : ButtonProps) {
+export default function Button({ category, onPress, children, icon, description, style={} } : ButtonProps) {
     const [isPressed, setIsPressed] = useState(false);
 
     return (
@@ -27,14 +28,18 @@ export default function Button({ category, onPress, children, icon, description 
                 ...styles.button,
                 ...styles.buttonAndLink,
                 borderColor: Colors[category],
-                backgroundColor: isPressed ? Colors.white : Colors[category]
+                backgroundColor: isPressed ? Colors.white : Colors[category],
+                ...style
             }}
             accessibilityHint={description}
         >
             
             <DefaultText style={{color: isPressed ? Colors[category] : Colors.white}} fontWeight="semibold" size="lg">
                 {
-                    icon && <FontAwesomeIcon icon={icon} color={isPressed ? Colors[category] : Colors.white}/>
+                    icon && 
+                    <>
+                        <FontAwesomeIcon icon={icon} color={isPressed ? Colors[category] : Colors.white}/>
+                    </>
                 }
                 {children}
             </DefaultText>
@@ -45,7 +50,7 @@ export default function Button({ category, onPress, children, icon, description 
 
 type ButtonLinkProps = Omit<ButtonProps, "onPress"> & { href: string };
 
-export function ButtonLink({category, children, href, icon}: ButtonLinkProps) {
+export function ButtonLink({category, children, href, icon, style={}}: ButtonLinkProps) {
     const [isPressed, setIsPressed] = useState(false);
 
     return (
@@ -57,12 +62,16 @@ export function ButtonLink({category, children, href, icon}: ButtonLinkProps) {
                 ...styles.buttonLink,
                 ...styles.buttonAndLink,
                 borderColor: Colors[category],
-                backgroundColor: isPressed ? Colors.white : Colors[category]
+                backgroundColor: isPressed ? Colors.white : Colors[category],
+                ...style
             }}
         >
             <DefaultText style={{color: isPressed ? Colors[category] : Colors.white}} fontWeight="semibold" size="lg">
                 {
-                    icon && <FontAwesomeIcon icon={icon} color={isPressed ? Colors[category] : Colors.white}/>
+                    icon && 
+                    <>
+                        <FontAwesomeIcon icon={icon} color={isPressed ? Colors[category] : Colors.white}/>
+                    </>
                 }
                 {children}
             </DefaultText>
@@ -75,9 +84,6 @@ const styles = StyleSheet.create({
     button: {
         padding: 10,
         paddingBottom: 6,
-        display: "flex",
-        flexDirection: "row",
-        gap: 5
     },
     buttonLink: {
         padding: 12,
@@ -91,6 +97,7 @@ const styles = StyleSheet.create({
         width: "100%",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        gap: 5
     }
 });
