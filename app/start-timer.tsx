@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { GestureResponderEvent, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 import Button from "@/components/Button";
-import { faArrowLeft, faPause, faPlay, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faPause, faPlay, faRefresh, faX } from "@fortawesome/free-solid-svg-icons";
 import { router } from "expo-router";
 import DefaultText from "@/components/DefaultText";
-import Svg, { SvgProps, Path } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 
@@ -141,130 +141,137 @@ export default function StartTimer() {
 
     return (
         <PageContainer>
-            <Button
-                category="tertiary"
-                style={{paddingHorizontal: 15, flex: 1}}
-                onPress={handleBack}
-                description="Tap to go back to the previous page" 
-            >
-                {
-                    color => (
-                        <FontAwesomeIcon icon={faArrowLeft} color={color}/>
-                    )
-                }
-            </Button>
-            <DefaultText style={styles.pomsLeft} size="lg" fontWeight="semibold" >
-                {
-                    pomsLeft >= 2 ?
-                    <>
-                        Poms Left: {pomsLeft}
-                    </>
-                    :
-                    pomsLeft === 1 &&
-                    <>
-                        Last Pom!
-                    </>
-                }
-            </DefaultText>
-            {
-                pomsLeft > 0 ?
-                <View style={styles.timerSection}>
+            <View style={styles.container}>
+                <DefaultText style={styles.pomsLeft} size="2xl" fontWeight="semibold" >
                     {
-                        currentStage === 0 &&
-                            <>
-                                <DefaultText fontWeight="semibold" style={{textAlign: "center"}} size="xl">
-                                    Get to Work!
-                                </DefaultText>
-                                <DefaultText fontWeight="bold" size="4xl">
-                                    {formatTime(pomTime)}
-                                </DefaultText>
-                            </>
+                        pomsLeft >= 2 ?
+                        <>
+                            Poms Left: {pomsLeft}
+                        </>
+                        :
+                        pomsLeft === 1 &&
+                        <>
+                            Last Pom!
+                        </>
                     }
-                    {
-                        currentStage === 1 &&
-                            <>
-                                <DefaultText fontWeight="semibold" style={{textAlign: "center"}} size="xl">
-                                    Take a break!
-                                </DefaultText>
-                                <DefaultText fontWeight="bold" size="4xl">
-                                    {formatTime(breakTime)}
-                                </DefaultText>
-                            </>
-                    }
-                    {
-                        currentStage === 2 &&
-                            <>
-                                <DefaultText fontWeight="semibold" style={{textAlign: "center"}} size="xl">
-                                    Relax!
-                                </DefaultText>
-                                <DefaultText fontWeight="bold" size="4xl">
-                                    {formatTime(longBreakTime)}
-                                </DefaultText>
-                            </>
-                    }
-                </View>
-                :
-                <DefaultText size="xl" style={{padding: 10}} fontWeight="semibold">
-                    You've completed your poms!
                 </DefaultText>
-            }
-            <View style={styles.buttons}>
-                <View style={styles.buttonContainer}>
-                    <Button 
-                        style={{flex: 1, borderRadius: 1000, aspectRatio: 1}}
-                        category="primary"
-                        description={`${isPaused ? "Start" : "Pause"} Timer`}
-                        onPress={handlePause}
+                <View style={styles.main}>
+                    
+                    {
+                        pomsLeft > 0 ?
+                        <View style={styles.timerSection}>
+                            {
+                                currentStage === 0 &&
+                                    <>
+                                        <DefaultText fontWeight="semibold" style={{textAlign: "center"}} size="xl">
+                                            Get to Work!
+                                        </DefaultText>
+                                        <DefaultText fontWeight="bold" size="4xl">
+                                            {formatTime(pomTime)}
+                                        </DefaultText>
+                                    </>
+                            }
+                            {
+                                currentStage === 1 &&
+                                    <>
+                                        <DefaultText fontWeight="semibold" style={{textAlign: "center"}} size="xl">
+                                            Take a break!
+                                        </DefaultText>
+                                        <DefaultText fontWeight="bold" size="4xl">
+                                            {formatTime(breakTime)}
+                                        </DefaultText>
+                                    </>
+                            }
+                            {
+                                currentStage === 2 &&
+                                    <>
+                                        <DefaultText fontWeight="semibold" style={{textAlign: "center"}} size="xl">
+                                            Relax!
+                                        </DefaultText>
+                                        <DefaultText fontWeight="bold" size="4xl">
+                                            {formatTime(longBreakTime)}
+                                        </DefaultText>
+                                    </>
+                            }
+                        </View>
+                        :
+                        <DefaultText size="xl" style={{padding: 10}} fontWeight="semibold">
+                            You've completed your poms!
+                        </DefaultText>
+                    }
+                    <View style={styles.buttons}>
+                        <View style={styles.buttonContainer}>
+                            <Button 
+                                style={{flex: 1, borderRadius: 1000, aspectRatio: 1}}
+                                category="primary"
+                                description={`${isPaused ? "Start" : "Pause"} Timer`}
+                                onPress={handlePause}
+                            >
+                                {
+                                    color => (
+                                        <FontAwesomeIcon icon={isPaused ? faPlay : faPause} color={color}/>
+                                    )
+                                }
+                            </Button>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button 
+                                style={{flex: 1, borderRadius: 1000, aspectRatio: 1}}
+                                category="tertiary"
+                                description={`Restart Current Pom`}
+                                onPress={handleRestartCurrent}
+                            >
+                                {
+                                    (color) => (
+                                        <Svg
+                                            width={20}
+                                            height={20}
+                                            viewBox="0 0 512 512"
+                                        >
+                                            {/* <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--> */}
+                                            <Path
+                                                fill={color}
+                                                d="M0 224c0 17.7 14.3 32 32 32s32-14.3 32-32c0-53 43-96 96-96h160v32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9S320 19.1 320 32v32H160C71.6 64 0 135.6 0 224zm512 64c0-17.7-14.3-32-32-32s-32 14.3-32 32c0 53-43 96-96 96H192v-32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V448h160c88.4 0 160-71.6 160-160z"
+                                            />
+                                            <Path
+                                                stroke={color}
+                                                strokeLinecap="round"
+                                                strokeWidth={50}
+                                                d="M260 320V200M220 220l40-20"
+                                            />
+                                        </Svg>
+                                    )
+                                }
+                            </Button>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button 
+                                style={{flex: 1, borderRadius: 1000, aspectRatio: 1}}
+                                category="tertiary"
+                                description={`Restart from the Beginning`}
+                                onPress={handleRestart}
+                            >
+                                {
+                                    (color) => (
+                                        <>
+                                            <FontAwesomeIcon icon={faRefresh} color={color}/>
+                                        </>
+                                    )
+                                }
+                            </Button>
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.closeButtonContainer}>
+                    <Button
+                        category="tertiary"
+                        style={{paddingHorizontal: 15, borderRadius: 1000, aspectRatio: 1, alignSelf: "flex-end"}}
+                        onPress={handleBack}
+                        description="Tap to close timer." 
                     >
                         {
                             color => (
-                                <FontAwesomeIcon icon={isPaused ? faPlay : faPause} color={color}/>
-                            )
-                        }
-                    </Button>
-                </View>
-                <View style={styles.buttonContainer}>
-                    <Button 
-                        style={{flex: 1, borderRadius: 1000, aspectRatio: 1}}
-                        category="tertiary"
-                        description={`Restart Current Pom`}
-                        onPress={handleRestartCurrent}
-                    >
-                        {
-                            (color) => (
-                                <Svg
-                                    width={20}
-                                    height={20}
-                                    viewBox="0 0 512 512"
-                                >
-                                    {/* <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--> */}
-                                    <Path
-                                        fill={color}
-                                        d="M0 224c0 17.7 14.3 32 32 32s32-14.3 32-32c0-53 43-96 96-96h160v32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9S320 19.1 320 32v32H160C71.6 64 0 135.6 0 224zm512 64c0-17.7-14.3-32-32-32s-32 14.3-32 32c0 53-43 96-96 96H192v-32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V448h160c88.4 0 160-71.6 160-160z"
-                                    />
-                                    <Path
-                                        stroke={color}
-                                        strokeLinecap="round"
-                                        strokeWidth={50}
-                                        d="M260 320V200M220 220l40-20"
-                                    />
-                                </Svg>
-                            )
-                        }
-                    </Button>
-                </View>
-                <View style={styles.buttonContainer}>
-                    <Button 
-                        style={{flex: 1, borderRadius: 1000, aspectRatio: 1}}
-                        category="tertiary"
-                        description={`Restart from the Beginning`}
-                        onPress={handleRestart}
-                    >
-                        {
-                            (color) => (
-                                <>
-                                    <FontAwesomeIcon icon={faRefresh} color={color}/>
-                                </>
+                                <FontAwesomeIcon icon={faX} color={color}/>
                             )
                         }
                     </Button>
@@ -277,16 +284,15 @@ export default function StartTimer() {
 
 const styles = StyleSheet.create({
     main: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    container: {
         flex: 1,
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-    },
-    header: {
-        display: "flex",
-        alignContent: "flex-start",
-        alignSelf: "flex-start",
-        alignItems: "flex-start"
+        justifyContent: "space-between",
     },
     pomsLeft: {
         display: "flex",
@@ -311,5 +317,11 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flex: 1,
         width: "100%"
+    },
+    closeButtonContainer: {
+        width: 80,
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "flex-end"
     }
 });

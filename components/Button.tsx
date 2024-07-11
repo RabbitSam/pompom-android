@@ -2,9 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { Pressable, StyleSheet, GestureResponderEvent, ViewStyle } from "react-native";
 import { Link } from "expo-router";
 import DefaultText from "./DefaultText";
-import { useState, PropsWithChildren, ReactNode } from "react";
-import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useState, ReactNode } from "react";
 
 
 type RenderProps = (color: string) => ReactNode
@@ -13,7 +11,7 @@ type ButtonProps = {
     category: "primary" | "secondary" | "tertiary",
     onPress?: null | ((e : GestureResponderEvent) => void),
     description?: string,
-    style?: Omit<ViewStyle, "padding" | "paddingBottom" | "display" | "flexDirection" | "gap" | "textAlign">,
+    style?: Omit<ViewStyle, "padding" | "display" | "flexDirection" | "gap" | "textAlign">,
     children?: ReactNode | RenderProps
 };
 
@@ -85,11 +83,9 @@ export function ButtonLink({category, children, href, style={}}: ButtonLinkProps
 const styles = StyleSheet.create({
     button: {
         padding: 10,
-        paddingBottom: 6,
     },
     buttonLink: {
         padding: 12,
-        paddingBottom: 6,
         textAlign: "center"
     },
     buttonAndLink: {
