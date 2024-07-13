@@ -11,6 +11,7 @@ import Button from "@/components/Button";
 import { useDispatch } from "react-redux";
 import { router } from "expo-router";
 import { setTimers } from "@/stores/currentTimerSlice";
+import HeaderIcon from "@/components/HeaderIcon";
 
 
 export default function QuickPom() {
@@ -30,7 +31,7 @@ export default function QuickPom() {
     return (
         <PageContainer>
             <View style={styles.header}>
-                <FontAwesomeIcon size={28} icon={faStopwatch} color={Colors.primary} />
+                <HeaderIcon icon={faStopwatch}/>
                 <HeaderText>
                     Quick Pom
                 </HeaderText>
