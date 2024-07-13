@@ -86,12 +86,12 @@ const styles = StyleSheet.create({
     },
     buttonLink: {
         padding: 12,
-        textAlign: "center"
+        textAlign: "center",
+        textAlignVertical: "center"
     },
     buttonAndLink: {
         borderWidth: 2,
         borderRadius: 5,
-        position: "relative",
         width: "100%",
         display: "flex",
         alignItems: "center",
