@@ -12,11 +12,12 @@ type ButtonProps = {
     onPress?: null | ((e : GestureResponderEvent) => void),
     description?: string,
     style?: Omit<ViewStyle, "padding" | "display" | "flexDirection" | "gap" | "textAlign">,
-    children?: ReactNode | RenderProps
+    children?: ReactNode | RenderProps,
+    disabled?: boolean
 };
 
 
-export default function Button({ category, onPress, children, description, style={} } : ButtonProps) {
+export default function Button({ category, onPress, children, description, style={}, disabled=false } : ButtonProps) {
     const [isPressed, setIsPressed] = useState(false);
 
     return (
@@ -32,6 +33,7 @@ export default function Button({ category, onPress, children, description, style
                 ...style
             }}
             accessibilityHint={description}
+            disabled={disabled}
         >
             
             <DefaultText style={{color: isPressed ? Colors[category] : Colors.white}} fontWeight="semibold" size="lg">
@@ -48,7 +50,7 @@ export default function Button({ category, onPress, children, description, style
 }
 
 
-type ButtonLinkProps = Omit<ButtonProps, "onPress"> & { href: string };
+type ButtonLinkProps = Omit<ButtonProps, "onPress" | "disabled"> & { href: string };
 
 export function ButtonLink({category, children, href, style={}}: ButtonLinkProps) {
     const [isPressed, setIsPressed] = useState(false);
