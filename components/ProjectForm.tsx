@@ -4,6 +4,7 @@ import { GestureResponderEvent, StyleSheet, View } from "react-native";
 import Input from "./Input";
 import Button from "./Button";
 import { router } from "expo-router";
+import { createProject } from "@/events/projectEvents";
 
 
 
@@ -18,6 +19,11 @@ export default function ProjectForm({ isEdit, projectId } : ProjectFormProps ) {
 
     const handleSubmit = (e: GestureResponderEvent) => {
         if (!isEdit) {
+            createProject(title)
+                .then(res =>
+                    router.push(`projects`)
+                )
+                .catch();
 
         } else {
 
@@ -32,7 +38,7 @@ export default function ProjectForm({ isEdit, projectId } : ProjectFormProps ) {
                 value={title}
             />
             <View style={styles.buttons}>
-                <Button category="primary">
+                <Button category="primary" onPress={handleSubmit}>
                     {isEdit ? "Submit Changes" : "Submit"}
                 </Button>
                 <Button category="tertiary" onPress={(_) => router.back()}>

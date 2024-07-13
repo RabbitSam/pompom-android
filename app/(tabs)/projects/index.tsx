@@ -6,10 +6,31 @@ import HeaderIcon from "@/components/HeaderIcon";
 import { StyleSheet, View } from "react-native";
 import { ButtonLink } from "@/components/Button";
 import DefaultText from "@/components/DefaultText";
+import { useEffect, useState } from "react";
+import natsort from "natsort";
+import { getProjects } from "@/events/projectEvents";
 
 
 export default function Projects() {
-    const projectIds : string[] = [];
+    const [projects, setProjects] = useState<Projects>({});
+    const [sortingHeader, setSortingHeader] = useState<"title" | "createdAt" | "lastModified" | "lastAccessed">("lastAccessed");
+
+    useEffect(() => {
+        getProjects()
+            .then(res => setProjects(res.data));
+    }, [])
+
+    const projectIds : string[] = Object.keys(projects);
+    projectIds.sort((a, b) => {
+        const sorter = natsort({insensitive: true, desc: false});
+        if (sortingHeader === "title") {
+            return sorter(projects[a][sortingHeader], projects[b][sortingHeader]);
+        }
+
+        const aTime : number = new Date(projects[a][sortingHeader]).getTime();
+        const bTime : number = new Date(projects[b][sortingHeader]).getTime();
+        return sorter(aTime, bTime);
+    });
 
     return (
         <PageContainer>
@@ -28,7 +49,15 @@ export default function Projects() {
                     }
                 </ButtonLink>
                 {
-                    !projectIds.length &&
+                    projectIds.length >= 1 ?
+                    <View style={styles.projects}>
+                        {
+                            projectIds.map(projectId => (
+                                <DefaultText key={projectId}>{projects[projectId].title}</DefaultText>
+                            ))
+                        }
+                    </View>
+                    :
                     <DefaultText>
                         No projects yet.
                     </DefaultText>
@@ -37,6 +66,7 @@ export default function Projects() {
         </PageContainer>
     );
 }
+
 
 const styles = StyleSheet.create({
     wrapper: {
@@ -63,4 +93,10 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         borderRadius: 1000,
     },
-})
+    projects: {
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "flex-start",
+        gap: 5,
+    }
+});
