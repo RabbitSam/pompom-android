@@ -30,6 +30,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{headerShown: false}} />
         <Stack.Screen name="start-timer" options={{headerShown: false}} />
+        <Stack.Screen name="projects/create" options={{headerShown: false}} />
       </Stack>
     </Provider>
     :

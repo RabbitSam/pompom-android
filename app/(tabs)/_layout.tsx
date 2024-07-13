@@ -1,11 +1,10 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { Colors } from "@/constants/Colors";
-import { faHome, faStopwatch } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faStopwatch, faLaptop } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 
 export default function TabLayout() {
-
   return (
     <Tabs 
       screenOptions={{
@@ -22,7 +21,6 @@ export default function TabLayout() {
           borderTopColor: Colors.darkenedBackground
         }
       }}
-      
     >
       <Tabs.Screen name="index" options={{
         title: "Home",
@@ -34,6 +32,12 @@ export default function TabLayout() {
         title: "Quick Pom",
         tabBarIcon: ({ color }) => (
           <FontAwesomeIcon icon={faStopwatch} color={color} size={20}/>
+        ),
+      }}/>
+      <Tabs.Screen name="projects/index" options={{
+        title: "Projects",
+        tabBarIcon: ({ color }) => (
+          <FontAwesomeIcon icon={faLaptop} color={color} size={20}/>
         ),
       }}/>
     </Tabs>
