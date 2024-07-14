@@ -199,6 +199,7 @@ type ProjectItemModalProps = {
 function ProjectItemModal({ visible, selectedProject, onModalClose } : ProjectItemModalProps) {
 
     const handleModalItemPressed = (key: "edit" | "delete") => {
+        onModalClose();
         router.push(`/projects/${selectedProject.id}/${key}`);
     };
 

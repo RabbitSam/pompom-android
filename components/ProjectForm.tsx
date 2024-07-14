@@ -5,7 +5,7 @@ import Input from "./Input";
 import Button from "./Button";
 import Loading from "./Loading";
 import { router } from "expo-router";
-import { createProject } from "@/events/projectEvents";
+import { createProject, editProject, getProject } from "@/events/projectEvents";
 
 
 
@@ -15,26 +15,43 @@ type ProjectFormProps = {
 }
 
 
-export default function ProjectForm({ isEdit, projectId } : ProjectFormProps ) {
+export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps ) {
     const [title, setTitle] = useState("");
     const [loading, setLoading] = useState(isEdit ? true : false);
 
     useEffect(() => {
         if (isEdit) {
             setLoading(true);
+            getProject(projectId)
+                .then(res => {
+                    setTitle(res.data.title);
+                    setLoading(false);
+                });
         }
     }, [])
 
     const handleSubmit = (e: GestureResponderEvent) => {
+        setLoading(true);
+
         if (!isEdit) {
             createProject(title)
-                .then(res =>
-                    router.push(`/projects/`)
-                )
+                .then(res => {
+                    setTitle("");
+                    setLoading(false);
+
+                    router.push(`/projects/`);
+                })
                 .catch();
 
         } else {
+            editProject(projectId, title)
+                .then(res => {
+                    setTitle("");
+                    setLoading(false);
 
+                    router.push(`/projects/`);
+                })
+                .catch();
         }
     };
 
