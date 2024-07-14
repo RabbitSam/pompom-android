@@ -68,6 +68,11 @@ export async function getProject(projectId: string) : Promise<EventResponse> {
                     data: projects[projectId]
                 };
 
+                projects[projectId].lastAccessed = new Date();
+
+                writeAsStringAsync(PROJECT_FILENAME, JSON.stringify(projects), { encoding: "utf8"})
+                    .catch(err => console.log(err));
+
                 return response;
             } else {
                 throw new Error("Project not found.");
