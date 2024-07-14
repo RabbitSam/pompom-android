@@ -1,7 +1,7 @@
 import HeaderText from "@/components/HeaderText";
 import PageContainer from "@/components/PageContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faLaptop, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faLaptop, faPlus } from "@fortawesome/free-solid-svg-icons";
 import HeaderIcon from "@/components/HeaderIcon";
 import { Pressable, StyleSheet, View, GestureResponderEvent } from "react-native";
 import { ButtonLink } from "@/components/Button";
@@ -13,12 +13,32 @@ import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import formatDate from "@/utils/formatDate";
 import ModalMenu from "@/components/ModalMenu";
+import Loading from "@/components/Loading";
+import Select from "@/components/Select";
+
+
+type SortingHeader = "title" | "createdAt" | "lastModified" | "lastAccessed";
+
+const SortingHeaders : SortingHeader[] = [ "title", "createdAt", "lastModified", "lastAccessed" ];
+
+const SortingHeadersMap : { [key in SortingHeader]: string } = {
+    "title": "Project Name",
+    "createdAt": "Created",
+    "lastAccessed": "Last Accessed",
+    "lastModified": "Last Modified"
+};
 
 
 export default function Projects() {
     const [projects, setProjects] = useState<Projects>({});
-    const [sortingHeader, setSortingHeader] = useState<"title" | "createdAt" | "lastModified" | "lastAccessed">("lastAccessed");
+    const [sortingHeader, setSortingHeader] = useState(3);
+    const [isAscending, setIsAscending] = useState(false);
 
+    //#region PageVariables
+    const [loading, setLoading] = useState(true);
+    //#endregion
+
+    //#region ModalVariables
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedProject, setSelectedProject] = useState<Project>({
         id: "",
@@ -31,31 +51,48 @@ export default function Projects() {
             current: []
         }
     });
+    //#endregion
+
 
     useEffect(() => {
         getProjects()
-            .then(res => setProjects(res.data));
+            .then(res => {
+                setProjects(res.data);
+                setLoading(false);
+            });
     }, [])
+
 
     const handleOpenModal = (projectId : string) => {
         setSelectedProject(projects[projectId]);
         setModalVisible(true);
     };
 
+    const handleSortingHeaderChange = (index: number) => {
+        if (index === sortingHeader) {
+            setIsAscending(prev => !prev);
+        } else {
+            setSortingHeader(index);
+            setIsAscending(false);
+        }
+    };
+
     const projectIds : string[] = Object.keys(projects);
     projectIds.sort((a, b) => {
-        const sorter = natsort({insensitive: true, desc: false});
-        if (sortingHeader === "title") {
-            return sorter(projects[a][sortingHeader], projects[b][sortingHeader]);
+        const sorter = natsort({insensitive: true, desc: !isAscending});
+        const selectedHeader : SortingHeader = SortingHeaders[sortingHeader];
+        if (selectedHeader === "title") {
+            return sorter(projects[a][selectedHeader], projects[b][selectedHeader]);
         }
 
-        const aTime : number = new Date(projects[a][sortingHeader]).getTime();
-        const bTime : number = new Date(projects[b][sortingHeader]).getTime();
+        const aTime : number = new Date(projects[a][selectedHeader]).getTime();
+        const bTime : number = new Date(projects[b][selectedHeader]).getTime();
         return sorter(aTime, bTime);
     });
 
     return (
         <>  
+            <Loading isLoading={loading}/>
             <PageContainer>
                 <View style={styles.wrapper}>
                     <View style={styles.header}>
@@ -67,17 +104,38 @@ export default function Projects() {
                     
                     {
                         projectIds.length >= 1 ?
-                        <View style={styles.projects}>
-                            {
-                                projectIds.map(projectId => (
-                                    <ProjectItem
-                                        key={projectId}
-                                        project={projects[projectId]}
-                                        onLongPress={(_) => handleOpenModal(projectId)}
-                                    />
-                                ))
-                            }
-                        </View>
+                        <>
+                            <View style={styles.sortingButtons}>
+                                <Select
+                                    title={
+                                        <>
+                                            Sort by: {SortingHeadersMap[SortingHeaders[sortingHeader]]}&nbsp;
+                                            <FontAwesomeIcon icon={isAscending ? faArrowUp : faArrowDown}/>
+                                        </>
+                                    }
+                                    dropdownTitle="Sort by:"
+                                    options={SortingHeaders.map(header => ({
+                                        key: header,
+                                        title: SortingHeadersMap[header]
+                                    }))}
+                                    selectedIndex={sortingHeader}
+                                    onSelectionChanged={handleSortingHeaderChange}
+                                >
+
+                                </Select>
+                            </View>
+                            <View style={styles.projects}>
+                                {
+                                    projectIds.map(projectId => (
+                                        <ProjectItem
+                                            key={projectId}
+                                            project={projects[projectId]}
+                                            onLongPress={(_) => handleOpenModal(projectId)}
+                                        />
+                                    ))
+                                }
+                            </View>
+                        </>
                         :
                         <DefaultText>
                             No projects yet.
@@ -175,6 +233,14 @@ function ProjectItemModal({ visible, selectedProject, onModalClose } : ProjectIt
 }
 
 
+function SortingModal({ visible, onModalClose } : ProjectItemModalProps) {
+    return (
+        <ModalMenu title="Sort by" visible={visible} onModalClose={onModalClose}>
+
+        </ModalMenu>
+    );
+}
+
 const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
@@ -221,5 +287,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: Colors.tertiary,
         width: "100%",
+    },
+    sortingButtons: {
+
     }
 });
