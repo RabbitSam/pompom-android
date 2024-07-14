@@ -1,9 +1,9 @@
 import HeaderText from "@/components/HeaderText";
 import PageContainer from "@/components/PageContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faLaptop, faPlus, faX } from "@fortawesome/free-solid-svg-icons";
+import { faLaptop, faPlus } from "@fortawesome/free-solid-svg-icons";
 import HeaderIcon from "@/components/HeaderIcon";
-import { Pressable, StyleSheet, View, Modal, GestureResponderEvent } from "react-native";
+import { Pressable, StyleSheet, View, GestureResponderEvent } from "react-native";
 import { ButtonLink } from "@/components/Button";
 import DefaultText from "@/components/DefaultText";
 import { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import { getProjects } from "@/events/projectEvents";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import formatDate from "@/utils/formatDate";
+import ModalMenu from "@/components/ModalMenu";
 
 
 export default function Projects() {
@@ -144,45 +145,32 @@ function ProjectItemModal({ visible, selectedProject, onModalClose } : ProjectIt
     };
 
     return (
-        <Modal animationType="fade" visible={visible} transparent={true}>
-                <Pressable style={styles.modalBackground} accessibilityHint="Press to close." onPress={(_) => onModalClose()} />
-                <View style={styles.modalContent}>
-                    <View style={styles.modalHeaderContainer}>
-                        <DefaultText fontWeight="semibold" size="xl" style={styles.modalHeader}>Options for {selectedProject.title}</DefaultText>
-                        <Pressable
-                            accessibilityHint="Press to close."
-                            onPress={(_) => onModalClose()}
-                            style={styles.modalCloseButton}
-                        >
-                            <FontAwesomeIcon icon={faX}/>
-                        </Pressable>
-                    </View>
-                    <Pressable
-                        style={({pressed}) => ({
-                            borderBottomWidth: 2,
-                            borderBottomColor: Colors.darkenedBackground,
-                            padding: 10,
-                            backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
-                        })}
-                        onPress={(_) => handleModalItemPressed("edit")}
-                    >
-                        <DefaultText fontWeight="medium" size="lg">
-                            Edit
-                        </DefaultText>
-                    </Pressable>
-                    <Pressable
-                        style={({pressed}) => ({
-                            padding: 10,
-                            backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
-                        })}
-                        onPress={(_) => handleModalItemPressed("delete")}
-                    >
-                        <DefaultText fontWeight="medium" size="lg">
-                            Delete
-                        </DefaultText>
-                    </Pressable>
-                </View>
-            </Modal>
+        <ModalMenu onModalClose={onModalClose} title={`Options for ${selectedProject.title}`} visible={visible}>
+            <Pressable
+                style={({pressed}) => ({
+                    borderBottomWidth: 2,
+                    borderBottomColor: Colors.darkenedBackground,
+                    padding: 10,
+                    backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
+                })}
+                onPress={(_) => handleModalItemPressed("edit")}
+            >
+                <DefaultText fontWeight="medium" size="lg">
+                    Edit
+                </DefaultText>
+            </Pressable>
+            <Pressable
+                style={({pressed}) => ({
+                    padding: 10,
+                    backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
+                })}
+                onPress={(_) => handleModalItemPressed("delete")}
+            >
+                <DefaultText fontWeight="medium" size="lg">
+                    Delete
+                </DefaultText>
+            </Pressable>
+        </ModalMenu>
     );
 }
 
@@ -233,54 +221,5 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: Colors.tertiary,
         width: "100%",
-    },
-    projectItemModal: {
-        backgroundColor: Colors.darkenedBackground,
-    },
-    modalBackground: {
-        backgroundColor: Colors.black,
-        flex: 1,
-        position: "absolute",
-        opacity: 0.5,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: "100%",
-        width: "100%",
-    },
-    modalMain: {
-        padding: 20,
-        width: "100%",
-        alignSelf: "center",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-        gap: 10,
-    },
-    modalContent: {
-        borderWidth: 2,
-        borderColor: Colors.tertiary,
-        borderRadius: 5,
-        width: "90%",
-        padding: 20,
-        backgroundColor: Colors.background,
-        margin: "auto"
-    },
-    modalHeaderContainer: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        borderBottomWidth: 2,
-        borderBottomColor: Colors.darkenedBackground,
-    },
-    modalHeader: {
-        paddingLeft: 10,
-        paddingBottom: 10
-    },
-    modalCloseButton: {
-        padding: 10,
     }
 });
