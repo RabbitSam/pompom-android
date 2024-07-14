@@ -1,12 +1,12 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TextStyle } from "react-native";
 import { PropsWithChildren } from "react";
 import { Colors } from "@/constants/Colors";
 import DefaultText from "./DefaultText";
 
 
-export default function HeaderText({children}: PropsWithChildren) {
+export default function HeaderText({children, style={}}: PropsWithChildren<{style?: TextStyle}>) {
     return (
-        <DefaultText style={styles.text} fontWeight="bold" size="2xl">
+        <DefaultText style={{...styles.text, ...style}} fontWeight="bold" size="2xl">
             {children}
         </DefaultText>
     );
