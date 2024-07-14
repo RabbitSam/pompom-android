@@ -17,7 +17,7 @@ type ProjectFormProps = {
 
 export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps ) {
     const [title, setTitle] = useState("");
-    const [loading, setLoading] = useState(isEdit ? true : false);
+    const [loading, setLoading] = useState(isEdit);
 
     useEffect(() => {
         if (isEdit) {
@@ -28,7 +28,7 @@ export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps 
                     setLoading(false);
                 });
         }
-    }, [])
+    }, [projectId, isEdit]);
 
     const handleSubmit = (e: GestureResponderEvent) => {
         setLoading(true);
@@ -39,7 +39,7 @@ export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps 
                     setTitle("");
                     setLoading(false);
 
-                    router.push(`/projects/`);
+                    router.push(`/projects/${res.data}`);
                 })
                 .catch();
 
@@ -49,7 +49,7 @@ export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps 
                     setTitle("");
                     setLoading(false);
 
-                    router.push(`/projects/`);
+                    router.push(`/projects/${projectId}`);
                 })
                 .catch();
         }
