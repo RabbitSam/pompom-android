@@ -108,7 +108,7 @@ function ProjectItem({ project, onLongPress } : { project : Project, onLongPress
                 ...styles.projectItem,
                 backgroundColor: pressed ? Colors.darkenedBackground : Colors.background
             })}
-            onPress={(_) => router.push(`projects/${project.id}`)}
+            onPress={(_) => router.push(`/projects/${project.id}`)}
             accessibilityHint="Press to view this project, long press for more options."
             onLongPress={onLongPress}
             delayLongPress={200}
@@ -140,7 +140,7 @@ type ProjectItemModalProps = {
 function ProjectItemModal({ visible, selectedProject, onModalClose } : ProjectItemModalProps) {
 
     const handleModalItemPressed = (key: "edit" | "delete") => {
-        router.push(`projects/${selectedProject.id}/${key}`);
+        router.push(`/projects/${selectedProject.id}/${key}`);
     };
 
     return (

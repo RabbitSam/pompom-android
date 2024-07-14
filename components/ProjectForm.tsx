@@ -29,7 +29,7 @@ export default function ProjectForm({ isEdit, projectId } : ProjectFormProps ) {
         if (!isEdit) {
             createProject(title)
                 .then(res =>
-                    router.push(`projects`)
+                    router.push(`/projects/`)
                 )
                 .catch();
 
