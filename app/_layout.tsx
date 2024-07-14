@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { SplashScreen } from "expo-router";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { Dosis_400Regular, Dosis_500Medium, Dosis_600SemiBold, Dosis_700Bold, Dosis_800ExtraBold } from "@expo-google-fonts/dosis";
@@ -7,6 +6,7 @@ import { Colors } from "@/constants/Colors";
 import { StatusBar } from "react-native";
 import store from "@/stores/store";
 import { Provider } from "react-redux";
+import * as SplashScreen from "expo-splash-screen";
 
 
 SplashScreen.preventAutoHideAsync();
