@@ -6,10 +6,10 @@ import HeaderIcon from "@/components/HeaderIcon";
 import { Pressable, StyleSheet, View, GestureResponderEvent } from "react-native";
 import { ButtonLink } from "@/components/Button";
 import DefaultText from "@/components/DefaultText";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import natsort from "natsort";
 import { getProjects } from "@/events/projectEvents";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import formatDate from "@/utils/formatDate";
 import ModalMenu from "@/components/ModalMenu";
@@ -54,13 +54,16 @@ export default function Projects() {
     //#endregion
 
 
-    useEffect(() => {
-        getProjects()
-            .then(res => {
-                setProjects(res.data);
-                setLoading(false);
-            });
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            setLoading(true);
+            getProjects()
+                .then(res => {
+                    setProjects(res.data);
+                    setLoading(false);
+                });
+        }, [])
+    );
 
 
     const handleOpenModal = (projectId : string) => {
