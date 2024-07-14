@@ -110,3 +110,29 @@ export async function editProject(projectId: string, title: string) : Promise<Ev
 }
 
 
+export async function deleteProject(projectId: string) : Promise<EventResponse> {
+
+    return readAsStringAsync(PROJECT_FILENAME, { encoding: "utf8" })
+        .then(output => JSON.parse(output) as Projects)
+        .then(async projects => {
+            if (projectId in projects) {
+
+                delete projects[projectId];
+
+                try {
+                    await writeAsStringAsync(PROJECT_FILENAME, JSON.stringify(projects), { encoding: "utf8" });
+                    const response : EventResponse = {
+                        success: true,
+                        data: "success"
+                    };
+
+                    return response;
+
+                } catch (e) {
+                    throw e;
+                }
+            } else {
+                throw new Error("Project not found.");
+            }
+        });
+}
