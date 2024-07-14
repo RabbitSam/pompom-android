@@ -1,24 +1,45 @@
 import HeaderText from "@/components/HeaderText";
 import PageContainer from "@/components/PageContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faLaptop, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faLaptop, faPlus, faX } from "@fortawesome/free-solid-svg-icons";
 import HeaderIcon from "@/components/HeaderIcon";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, Modal, GestureResponderEvent } from "react-native";
 import { ButtonLink } from "@/components/Button";
 import DefaultText from "@/components/DefaultText";
 import { useEffect, useState } from "react";
 import natsort from "natsort";
 import { getProjects } from "@/events/projectEvents";
+import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
+import formatDate from "@/utils/formatDate";
 
 
 export default function Projects() {
     const [projects, setProjects] = useState<Projects>({});
     const [sortingHeader, setSortingHeader] = useState<"title" | "createdAt" | "lastModified" | "lastAccessed">("lastAccessed");
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<Project>({
+        id: "",
+        createdAt: "",
+        lastAccessed: "",
+        lastModified: "",
+        title: "",
+        tasks: {
+            completed: [],
+            current: []
+        }
+    });
+
     useEffect(() => {
         getProjects()
             .then(res => setProjects(res.data));
     }, [])
+
+    const handleOpenModal = (projectId : string) => {
+        setSelectedProject(projects[projectId]);
+        setModalVisible(true);
+    };
 
     const projectIds : string[] = Object.keys(projects);
     projectIds.sort((a, b) => {
@@ -33,37 +54,135 @@ export default function Projects() {
     });
 
     return (
-        <PageContainer>
-            <View style={styles.wrapper}>
-                <View style={styles.header}>
-                    <HeaderIcon icon={faLaptop}/>
-                    <HeaderText>
-                        Projects
-                    </HeaderText>
-                </View>
-                <ButtonLink href="projects/create" category="primary" style={styles.newProjectButton}>
-                    {
-                        (color) => (
-                            <FontAwesomeIcon icon={faPlus} color={color} />
-                        )
-                    }
-                </ButtonLink>
-                {
-                    projectIds.length >= 1 ?
-                    <View style={styles.projects}>
-                        {
-                            projectIds.map(projectId => (
-                                <DefaultText key={projectId}>{projects[projectId].title}</DefaultText>
-                            ))
-                        }
+        <>  
+            <PageContainer>
+                <View style={styles.wrapper}>
+                    <View style={styles.header}>
+                        <HeaderIcon icon={faLaptop}/>
+                        <HeaderText>
+                            Projects
+                        </HeaderText>
                     </View>
-                    :
-                    <DefaultText>
-                        No projects yet.
-                    </DefaultText>
+                    
+                    {
+                        projectIds.length >= 1 ?
+                        <View style={styles.projects}>
+                            {
+                                projectIds.map(projectId => (
+                                    <ProjectItem
+                                        key={projectId}
+                                        project={projects[projectId]}
+                                        onLongPress={(_) => handleOpenModal(projectId)}
+                                    />
+                                ))
+                            }
+                        </View>
+                        :
+                        <DefaultText>
+                            No projects yet.
+                        </DefaultText>
+                    }
+                </View>
+            </PageContainer>
+            <ButtonLink href="projects/create" category="primary" style={styles.newProjectButton}>
+                {
+                    (color) => (
+                        <FontAwesomeIcon icon={faPlus} color={color} />
+                    )
                 }
-            </View>
-        </PageContainer>
+            </ButtonLink>
+            <ProjectItemModal 
+                selectedProject={selectedProject}
+                visible={modalVisible}
+                onModalClose={() => setModalVisible(false)}
+            />
+        </>
+    );
+}
+
+
+function ProjectItem({ project, onLongPress } : { project : Project, onLongPress: (e : GestureResponderEvent) => void }) {
+    return (
+        <Pressable
+            style={({ pressed }) => ({
+                ...styles.projectItem,
+                backgroundColor: pressed ? Colors.darkenedBackground : Colors.background
+            })}
+            onPress={(_) => router.push(`projects/${project.id}`)}
+            accessibilityHint="Press to view this project, long press for more options."
+            onLongPress={onLongPress}
+            delayLongPress={200}
+        >
+            <DefaultText fontWeight="semibold" size="lg" style={styles.projectItemTitle}>
+                {project.title}
+            </DefaultText>
+            <DefaultText>
+                Created: {formatDate(project.createdAt)}
+            </DefaultText>
+            <DefaultText>
+                Last Modified: {formatDate(project.lastModified)}
+            </DefaultText>
+            <DefaultText>
+                Last Accessed: {formatDate(project.lastAccessed)}
+            </DefaultText>
+        </Pressable>
+    );
+}
+
+
+type ProjectItemModalProps = {
+    visible: boolean,
+    selectedProject: Project,
+    onModalClose: () => void
+};
+
+
+function ProjectItemModal({ visible, selectedProject, onModalClose } : ProjectItemModalProps) {
+
+    const handleModalItemPressed = (key: "edit" | "delete") => {
+        router.push(`projects/${selectedProject.id}/${key}`);
+    };
+
+    return (
+        <Modal animationType="fade" visible={visible} transparent={true}>
+                <Pressable style={styles.modalBackground} accessibilityHint="Press to close." onPress={(_) => onModalClose()} />
+                <View style={styles.modalContent}>
+                    <View style={styles.modalHeaderContainer}>
+                        <DefaultText fontWeight="semibold" size="xl" style={styles.modalHeader}>Options for {selectedProject.title}</DefaultText>
+                        <Pressable
+                            accessibilityHint="Press to close."
+                            onPress={(_) => onModalClose()}
+                            style={styles.modalCloseButton}
+                        >
+                            <FontAwesomeIcon icon={faX}/>
+                        </Pressable>
+                    </View>
+                    <Pressable
+                        style={({pressed}) => ({
+                            borderBottomWidth: 2,
+                            borderBottomColor: Colors.darkenedBackground,
+                            padding: 10,
+                            backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
+                        })}
+                        onPress={(_) => handleModalItemPressed("edit")}
+                    >
+                        <DefaultText fontWeight="medium" size="lg">
+                            Edit
+                        </DefaultText>
+                    </Pressable>
+                    <Pressable
+                        style={({pressed}) => ({
+                            padding: 10,
+                            backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
+                        })}
+                        onPress={(_) => handleModalItemPressed("delete")}
+                    >
+                        <DefaultText fontWeight="medium" size="lg">
+                            Delete
+                        </DefaultText>
+                    </Pressable>
+                </View>
+            </Modal>
     );
 }
 
@@ -87,8 +206,8 @@ const styles = StyleSheet.create({
     newProjectButton: {
         position: "absolute",
         elevation: 100,
-        bottom: 0,
-        right: 0,
+        bottom: 20,
+        right: 20,
         width: 80,
         aspectRatio: 1,
         borderRadius: 1000,
@@ -97,6 +216,71 @@ const styles = StyleSheet.create({
         display: "flex",
         alignItems: "flex-start",
         justifyContent: "flex-start",
-        gap: 5,
+        gap: 15,
+        width: "100%"
+    },
+    projectItem: {
+        borderWidth: 2,
+        borderColor: Colors.tertiary,
+        width: "100%",
+        padding: 10,
+        borderRadius: 5,
+        display: "flex",
+        flexDirection: "column",
+        gap: 5
+    },
+    projectItemTitle: {
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.tertiary,
+        width: "100%",
+    },
+    projectItemModal: {
+        backgroundColor: Colors.darkenedBackground,
+    },
+    modalBackground: {
+        backgroundColor: Colors.black,
+        flex: 1,
+        position: "absolute",
+        opacity: 0.5,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "100%",
+        width: "100%",
+    },
+    modalMain: {
+        padding: 20,
+        width: "100%",
+        alignSelf: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
+        gap: 10,
+    },
+    modalContent: {
+        borderWidth: 2,
+        borderColor: Colors.tertiary,
+        borderRadius: 5,
+        width: "90%",
+        padding: 20,
+        backgroundColor: Colors.background,
+        margin: "auto"
+    },
+    modalHeaderContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderBottomWidth: 2,
+        borderBottomColor: Colors.darkenedBackground,
+    },
+    modalHeader: {
+        paddingLeft: 10,
+        paddingBottom: 10
+    },
+    modalCloseButton: {
+        padding: 10,
     }
 });
