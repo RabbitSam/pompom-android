@@ -23,7 +23,7 @@ export default function Delete() {
                 setTitle(res.data.title);
                 setLoading(false);
             });
-    }, []);
+    }, [projectId]);
 
 
     const handleSubmit = (e: GestureResponderEvent) => {
