@@ -1,11 +1,10 @@
 import PageContainer from "@/components/PageContainer";
 import { StyleSheet, View } from "react-native";
 import HeaderText from "@/components/HeaderText";
-import { Colors } from "@/constants/Colors";
 import ProjectForm from "@/components/ProjectForm";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useLocalSearchParams } from "expo-router";
+import HeaderIcon from "@/components/HeaderIcon";
 
 
 export default function EditProject() {
@@ -14,7 +13,7 @@ export default function EditProject() {
     return (
         <PageContainer>
             <View style={styles.header}>
-                <FontAwesomeIcon icon={faPenToSquare} color={Colors.primary} size={28}/>
+                <HeaderIcon icon={faPenToSquare} />
                 <HeaderText>
                     Edit Project 
                 </HeaderText>

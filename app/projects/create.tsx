@@ -1,10 +1,9 @@
 import PageContainer from "@/components/PageContainer";
 import { StyleSheet, View } from "react-native";
 import HeaderText from "@/components/HeaderText";
-import { Colors } from "@/constants/Colors";
 import ProjectForm from "@/components/ProjectForm";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import HeaderIcon from "@/components/HeaderIcon";
 
 
 export default function CreateProject() {
@@ -12,7 +11,7 @@ export default function CreateProject() {
     return (
         <PageContainer>
             <View style={styles.header}>
-                <FontAwesomeIcon icon={faPlus} color={Colors.primary} size={28}/>
+                <HeaderIcon icon={faPlus}/>
                 <HeaderText>
                     Create Project 
                 </HeaderText>
