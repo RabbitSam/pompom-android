@@ -40,6 +40,13 @@ export default function TabLayout() {
           <FontAwesomeIcon icon={faLaptop} color={color} size={20}/>
         ),
       }}/>
+      <Tabs.Screen name="projects/[projectId]" options={{
+        title: "View Project",
+        tabBarIcon: ({ color }) => (
+          <FontAwesomeIcon icon={faLaptop} color={color} size={20}/>
+        ),
+        href: null
+      }}/>
     </Tabs>
   );
 }
