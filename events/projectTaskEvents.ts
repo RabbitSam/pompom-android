@@ -32,6 +32,7 @@ export async function createTask(projectId: string, newTask: Omit<Task, "id">  )
                 };
 
                 projects[projectId].tasks.current.push(taskId);
+                projects[projectId].lastModified = new Date();
 
                 try {
                     await writeAsStringAsync(TEMP_TASK_FILENAME, JSON.stringify(tasks), { encoding: "utf8" });
@@ -114,6 +115,7 @@ export async function deleteTask(projectId: string, taskId: string) : Promise<Ev
 
                 projects[projectId].tasks.current = projects[projectId].tasks.current.filter(id => id !== taskId);
                 projects[projectId].tasks.completed = projects[projectId].tasks.completed.filter(id => id !== taskId);
+                projects[projectId].lastModified = new Date();
 
                 try {
                     await writeAsStringAsync(TEMP_TASK_FILENAME, JSON.stringify(tasks), { encoding: "utf8" });
@@ -196,7 +198,7 @@ export async function getTasks(projectId: string) : Promise<EventResponse> {
 
                     //Side Effect
                     projects[projectId].tasks.completed = projects[projectId].tasks.completed.filter(taskId => !(taskId in taskIndexesToDelete.completed));
-                    projects[projectId].tasks.current = projects[projectId].tasks.completed.filter(taskId => !(taskId in taskIndexesToDelete.current));
+                    projects[projectId].tasks.current = projects[projectId].tasks.current.filter(taskId => !(taskId in taskIndexesToDelete.current));
 
                     writeAsStringAsync(PROJECT_FILENAME, JSON.stringify(projects), { encoding: "utf8"})
                         .catch(e => console.log("Couldn't delete taskIds."));
