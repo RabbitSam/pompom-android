@@ -10,6 +10,8 @@ import { deleteProject, getProject } from "@/events/projectEvents";
 import Button from "@/components/Button";
 import { router } from "expo-router";
 import Loading from "@/components/Loading";
+import { TinyEmitter } from "tiny-emitter";
+const emitter : TinyEmitter = require("tiny-emitter/instance");
 
 
 export default function Delete() {
@@ -22,6 +24,11 @@ export default function Delete() {
             .then(res => {
                 setTitle(res.data.title);
                 setLoading(false);
+            })
+            .catch(err => {
+                emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                setLoading(false);
+                router.back();
             });
     }, [projectId]);
 
@@ -32,8 +39,14 @@ export default function Delete() {
             .then(res => {
                 setTitle("");
                 setLoading(false);
+
+                emitter.emit("show-toast", "success", "Project deleted successfully.");
                 router.push("/projects/");
-            });
+            })
+            .catch(err => {
+                emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                setLoading(false);
+            });;
     };
 
 

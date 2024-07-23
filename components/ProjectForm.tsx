@@ -6,6 +6,8 @@ import Button from "./Button";
 import Loading from "./Loading";
 import { router } from "expo-router";
 import { createProject, editProject, getProject } from "@/events/projectEvents";
+import { TinyEmitter } from "tiny-emitter";
+const emitter : TinyEmitter = require("tiny-emitter/instance");
 
 
 
@@ -26,6 +28,11 @@ export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps 
                 .then(res => {
                     setTitle(res.data.title);
                     setLoading(false);
+                })
+                .catch(err => {
+                    emitter.emit("show-toast", "error", "An unexpected error occurred, please try again.");
+                    setLoading(false);
+                    router.re();
                 });
         }
     }, [projectId, isEdit]);
@@ -38,10 +45,14 @@ export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps 
                 .then(res => {
                     setTitle("");
                     setLoading(false);
-
+                    
+                    emitter.emit("show-toast", "SUCCESS", "Successfully created project.");
                     router.push(`/projects/${res.data}`);
                 })
-                .catch();
+                .catch(err => {
+                    emitter.emit("show-toast", "error", "An unexpected error occurred, please try again.");
+                    setLoading(false);
+                });
 
         } else {
             editProject(projectId, title)
@@ -49,9 +60,13 @@ export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps 
                     setTitle("");
                     setLoading(false);
 
+                    emitter.emit("show-toast", "SUCCESS", "Successfully edited project title.");
                     router.push(`/projects/${projectId}`);
                 })
-                .catch();
+                .catch(err => {
+                    emitter.emit("show-toast", "error", "An unexpected error occurred, please try again.");
+                    setLoading(false);
+                });
         }
     };
 
@@ -65,7 +80,7 @@ export default function ProjectForm({ isEdit, projectId="" } : ProjectFormProps 
                     value={title}
                 />
                 <View style={styles.buttons}>
-                    <Button category="primary" onPress={handleSubmit}>
+                    <Button category="primary" onPress={handleSubmit} disabled={!title.length}>
                         {isEdit ? "Submit Changes" : "Submit"}
                     </Button>
                     <Button category="tertiary" onPress={(_) => router.back()}>
