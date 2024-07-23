@@ -1,7 +1,7 @@
 import PageContainer from "@/components/PageContainer";
 import { getProject } from "@/events/projectEvents";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
 import Loading from "@/components/Loading";
 import { GestureResponderEvent, Pressable, StyleSheet, View } from "react-native";
 import HeaderText from "@/components/HeaderText";
@@ -13,8 +13,8 @@ import { Colors } from "@/constants/Colors";
 import { useDispatch } from "react-redux";
 import { setTimers } from "@/stores/currentTimerSlice";
 import formatDate from "@/utils/formatDate";
-import ModalMenu from "@/components/ModalMenu";
-import { getTasks } from "@/events/projectTaskEvents";
+import { getTasks, setTaskCompletionStatus } from "@/events/projectTaskEvents";
+import OptionsMenu from "@/components/OptionsMenu";
 
 
 export default function ViewProject() {
@@ -41,7 +41,7 @@ export default function ViewProject() {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-    useEffect(() => {
+    const reloadProject = () => {
         setLoading(true);
         getProject(projectId || "")
             .then(res => {
@@ -52,7 +52,11 @@ export default function ViewProject() {
                 setTasks(res.data);
                 setLoading(false);
             });
-    }, [projectId]);
+    };
+
+    useFocusEffect(
+        useCallback(reloadProject, [projectId])
+    );
 
     const handleTaskLongPress = (e: GestureResponderEvent, task: Task) => {
         setSelectedTask(task);
@@ -62,6 +66,38 @@ export default function ViewProject() {
     const handleModalClose = () => {
         setSelectedTask(null);
         setModalVisible(false);
+    };
+
+    const handleOptionPressed = (index: number) => {
+        if (!selectedTask?.completedAt) {
+            switch (index) {
+                case 0:
+                    setModalVisible(false);
+                    router.push(`/projects/${projectId}/tasks/${selectedTask?.id}/edit`);
+                    setSelectedTask(null);
+                    break;
+                
+                case 1:
+                    setModalVisible(false);
+                    router.push(`/projects/${projectId}/tasks/${selectedTask?.id}/delete`);
+                    setSelectedTask(null);
+                    break;
+
+                case 2:
+                    setModalVisible(false);
+                    setLoading(true);
+                    setTaskCompletionStatus(projectId || "", selectedTask?.id || "", true)
+                        .then(data => reloadProject());
+                    break;
+            
+                default:
+                    break;
+            }
+        } else {
+            setModalVisible(false);
+            setTaskCompletionStatus(projectId || "", selectedTask?.id || "", false)
+                .then(data => reloadProject());
+        }
     };
 
     return (
@@ -113,7 +149,7 @@ export default function ViewProject() {
                     <View style={styles.tasks}>
                         {
                             tasks[selectedTab].map(task => (
-                                <TaskItem task={task} onLongPress={e => handleTaskLongPress(e, task)}/>
+                                <TaskItem key={task.id} task={task} onLongPress={e => handleTaskLongPress(e, task)}/>
                             ))
                         }
                     </View>
@@ -126,9 +162,19 @@ export default function ViewProject() {
                     )
                 }
             </ButtonLink>
-            <ModalMenu title={`Options for ${selectedTask?.title}`} visible={modalVisible} onModalClose={handleModalClose}>
-
-            </ModalMenu>
+            <OptionsMenu
+                title={`Options for ${selectedTask?.title}`}
+                visible={modalVisible}
+                onModalClose={handleModalClose}
+                items={!selectedTask?.completedAt ? [
+                    {key: "edit", title: "Edit"},
+                    {key: "delete", title: "Delete"},
+                    {key: "mark", title: "Mark as Complete"}
+                ] : [
+                    {key: "mark", title: "Mark as Incomplete"}
+                ]}
+                onItemPressed={handleOptionPressed}
+            />
         </>
     );
 }
@@ -174,11 +220,12 @@ function TaskItem({ task, onLongPress } : TaskItemProps) {
             delayLongPress={200}
         >
             {
-                taskIsComplete &&
+                !taskIsComplete &&
                 <Button
                     category="primary"
                     description="Start task."
                     onPress={handleTaskItemPressed}
+                    style={styles.playButton}
                 >
                     {
                         color => (
@@ -284,7 +331,8 @@ const styles = StyleSheet.create({
     },
     tasks: {
         display: "flex",
-        gap: 10
+        gap: 10,
+        width: "100%"
     },
     taskItem: {
         display: "flex",
@@ -293,7 +341,10 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         borderWidth: 2,
         borderRadius: 5,
-        borderColor: Colors.tertiary
+        borderColor: Colors.tertiary,
+        padding: 10,
+        width: "100%",
+        gap: 15
     },
     taskInfo: {
         flex: 1,

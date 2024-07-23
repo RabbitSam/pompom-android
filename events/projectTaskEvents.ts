@@ -219,3 +219,57 @@ export async function getTasks(projectId: string) : Promise<EventResponse> {
             }
         });
 }
+
+
+export async function setTaskCompletionStatus(projectId: string, taskId: string, isComplete: boolean) : Promise<EventResponse> {
+    return readAsStringAsync(PROJECT_FILENAME, { encoding: "utf8" })
+        .then(data => JSON.parse(data) as Projects)
+        .then(async projects => {
+            if (projectId in projects) {
+                try {
+                    const tasks = await readAsStringAsync(TASK_FILENAME, { encoding: 'utf8'})
+                                            .then(data => JSON.parse(data) as Tasks);
+
+                    if (taskId in tasks) {
+                        if (isComplete) {
+                            tasks[taskId].completedAt = new Date();
+                            projects[projectId].tasks.completed.push(taskId);
+                            projects[projectId].tasks.current = projects[projectId].tasks.current.filter(id => id !== taskId);
+                        } else {
+                            delete tasks[taskId].completedAt;
+                            projects[projectId].tasks.current.push(taskId);
+                            projects[projectId].tasks.completed = projects[projectId].tasks.completed.filter(id => id !== taskId);
+                        }
+
+                        projects[projectId].lastModified = new Date();
+
+                        try {
+                            await writeAsStringAsync(TEMP_TASK_FILENAME, JSON.stringify(tasks), { encoding: "utf8" });
+
+                            await writeAsStringAsync(PROJECT_FILENAME, JSON.stringify(projects), { encoding: "utf8" });
+
+                            return moveAsync({from: TEMP_TASK_FILENAME, to: TASK_FILENAME})
+                                .then(() => {
+                                    const res : EventResponse = {
+                                        success: true,
+                                        data: taskId
+                                    };
+        
+                                    return res;
+                                });
+                        } catch (e) {
+                            throw new Error("Could not write files.");
+                        }
+
+                    } else {
+                        throw new Error("Task does not exist.");
+                    }
+
+                } catch (e) {
+                    throw new Error("Couldn't read tasks.");
+                }
+            } else {
+                throw new Error("Project does not exist.");
+            }
+        });
+}
