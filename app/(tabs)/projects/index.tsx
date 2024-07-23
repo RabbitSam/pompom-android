@@ -15,6 +15,7 @@ import formatDate from "@/utils/formatDate";
 import ModalMenu from "@/components/ModalMenu";
 import Loading from "@/components/Loading";
 import Select from "@/components/Select";
+import OptionsMenu from "@/components/OptionsMenu";
 
 
 type SortingHeader = "title" | "createdAt" | "lastModified" | "lastAccessed";
@@ -200,39 +201,34 @@ type ProjectItemModalProps = {
 
 
 function ProjectItemModal({ visible, selectedProject, onModalClose } : ProjectItemModalProps) {
-
-    const handleModalItemPressed = (key: "edit" | "delete") => {
-        onModalClose();
-        router.push(`/projects/${selectedProject.id}/${key}`);
+    const handleOptionPressed = (index: number) => {
+        switch (index) {
+            case 0: //Edit
+                onModalClose();
+                router.push(`/projects/${selectedProject.id}/edit`);
+                break;
+            
+            case 1: //Delete
+                onModalClose();
+                router.push(`/projects/${selectedProject.id}/delete`);
+                break;
+        
+            default:
+                break;
+        }
     };
 
     return (
-        <ModalMenu onModalClose={onModalClose} title={`Options for ${selectedProject.title}`} visible={visible}>
-            <Pressable
-                style={({pressed}) => ({
-                    borderBottomWidth: 2,
-                    borderBottomColor: Colors.darkenedBackground,
-                    padding: 10,
-                    backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
-                })}
-                onPress={(_) => handleModalItemPressed("edit")}
-            >
-                <DefaultText fontWeight="medium" size="lg">
-                    Edit
-                </DefaultText>
-            </Pressable>
-            <Pressable
-                style={({pressed}) => ({
-                    padding: 10,
-                    backgroundColor: pressed ? Colors.darkenedBackground : Colors.background,
-                })}
-                onPress={(_) => handleModalItemPressed("delete")}
-            >
-                <DefaultText fontWeight="medium" size="lg">
-                    Delete
-                </DefaultText>
-            </Pressable>
-        </ModalMenu>
+        <OptionsMenu
+            items={[
+                {key: "edit", title: "Edit"},
+                {key: "delete", title: "Delete"}
+            ]}
+            onItemPressed={handleOptionPressed}
+            onModalClose={onModalClose}
+            title={`Options for ${selectedProject.title}`}
+            visible={visible}
+        />
     );
 }
 
