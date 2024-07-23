@@ -7,6 +7,7 @@ import { StatusBar } from "react-native";
 import store from "@/stores/store";
 import { Provider } from "react-redux";
 import * as SplashScreen from "expo-splash-screen";
+import PageContainer from "@/components/PageContainer";
 
 
 SplashScreen.preventAutoHideAsync();
@@ -33,10 +34,13 @@ export default function RootLayout() {
         <Stack.Screen name="projects/create" options={{headerShown: false}} />
         <Stack.Screen name="projects/[projectId]/edit" options={{headerShown: false}} />
         <Stack.Screen name="projects/[projectId]/delete" options={{headerShown: false}} />
+        <Stack.Screen name="projects/[projectId]/tasks/create" options={{headerShown: false}} />
+        <Stack.Screen name="projects/[projectId]/tasks/[taskId]/edit" options={{headerShown: false}} />
+        <Stack.Screen name="projects/[projectId]/tasks/[taskId]/delete" options={{headerShown: false}} />
       </Stack>
     </Provider>
     :
-    <>
-    </>
+    <PageContainer>
+    </PageContainer>
   );
 }
