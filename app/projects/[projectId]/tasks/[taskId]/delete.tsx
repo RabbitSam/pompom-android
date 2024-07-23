@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { DefaultTimerState } from "@/constants/DefaultTimerState";
 import { deleteTask, getTask } from "@/events/projectTaskEvents";
 import { router } from "expo-router";
+import { TinyEmitter } from "tiny-emitter";
+const emitter : TinyEmitter = require("tiny-emitter/instance");
 
 
 export default function DeleteTask() {
@@ -27,6 +29,11 @@ export default function DeleteTask() {
             .then(res => {
                 setTask(res.data);
                 setLoading(false);
+            })
+            .catch(err => {
+                emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                setLoading(false);
+                router.back();
             });
     }, [taskId]);
 
@@ -40,8 +47,13 @@ export default function DeleteTask() {
                     timer: DefaultTimerState,
                     title: ""
                 });
+                emitter.emit("show-toast", "success", "Task deleted successfully.");
                 router.push(`/projects/${projectId}/`);
-            });
+            })
+            .catch(err => {
+                emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                setLoading(false);
+            });;
     };
 
 

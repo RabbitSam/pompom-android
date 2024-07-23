@@ -7,6 +7,8 @@ import PomSetterGrid from "./PomSetterGrid";
 import { router } from "expo-router";
 import Loading from "./Loading";
 import { createTask, editTask, getTask } from "@/events/projectTaskEvents";
+import { TinyEmitter } from "tiny-emitter";
+const emitter : TinyEmitter = require("tiny-emitter/instance");
 
 
 type TaskFormProps = {
@@ -32,7 +34,12 @@ export default function TaskForm({isEdit, projectId, taskId} : TaskFormProps) {
                         title: "",
                         timer: DefaultTimerState
                     });
+                    emitter.emit("show-toast", "success", "Task edited successfully.");
                     router.push(`projects/${projectId}`);
+                })
+                .catch(err => {
+                    emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                    setLoading(false);
                 });
         } else {
             createTask(projectId, task)
@@ -41,7 +48,12 @@ export default function TaskForm({isEdit, projectId, taskId} : TaskFormProps) {
                         title: "",
                         timer: DefaultTimerState
                     });
+                    emitter.emit("show-toast", "success", "Task created successfully.");
                     router.push(`projects/${projectId}`);
+                })
+                .catch(err => {
+                    emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                    setLoading(false);
                 });
         }
     };
@@ -54,7 +66,12 @@ export default function TaskForm({isEdit, projectId, taskId} : TaskFormProps) {
                 .then(res => {
                     setTask(res.data)
                     setLoading(false);
-                });                                                                                                 
+                })
+                .catch(err => {
+                    emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                    setLoading(false);
+                    router.back();
+                });;                                                                                                 
         }
     }, [taskId, isEdit]);
 

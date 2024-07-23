@@ -15,6 +15,8 @@ import { setTimers } from "@/stores/currentTimerSlice";
 import formatDate from "@/utils/formatDate";
 import { getTasks, setTaskCompletionStatus } from "@/events/projectTaskEvents";
 import OptionsMenu from "@/components/OptionsMenu";
+import { TinyEmitter } from "tiny-emitter";
+const emitter : TinyEmitter = require("tiny-emitter/instance");
 
 
 export default function ViewProject() {
@@ -51,6 +53,11 @@ export default function ViewProject() {
             .then(res => {
                 setTasks(res.data);
                 setLoading(false);
+            })
+            .catch(err => {
+                emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                setLoading(false);
+                router.back();
             });
     };
 
@@ -87,7 +94,14 @@ export default function ViewProject() {
                     setModalVisible(false);
                     setLoading(true);
                     setTaskCompletionStatus(projectId || "", selectedTask?.id || "", true)
-                        .then(data => reloadProject());
+                        .then(data => {
+                            emitter.emit("show-toast", "success", "Successfully set task as complete.");
+                            reloadProject();
+                        })
+                        .catch(err => {
+                            emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                            setLoading(false);
+                        });
                     break;
             
                 default:
@@ -96,7 +110,14 @@ export default function ViewProject() {
         } else {
             setModalVisible(false);
             setTaskCompletionStatus(projectId || "", selectedTask?.id || "", false)
-                .then(data => reloadProject());
+                .then(data => {
+                    emitter.emit("show-toast", "success", "Successfully set task as incomplete.");
+                    reloadProject();
+                })
+                .catch(err => {
+                    emitter.emit("show-toast", "error", "An unexpected error occured, please try again.");
+                    setLoading(false);
+                });
         }
     };
 
